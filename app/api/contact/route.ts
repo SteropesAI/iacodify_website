@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const ENV_TO = process.env.CONTACT_TO ?? "info@steropes.fr";
 
 const FROM = "IAcodify <iacodify@envoi.steropes.fr>";
@@ -137,6 +136,8 @@ export async function POST(req: NextRequest) {
       console.error("[contact] cle Resend manquante dans .env.local");
       return NextResponse.json({ error: "Config manquante" }, { status: 500 });
     }
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const data = await req.json() as Record<string, unknown>;
 
