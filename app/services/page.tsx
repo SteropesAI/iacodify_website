@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, BrainCircuit, Database, Server, Globe, Smartphone, CheckCircle, Shield, Terminal, Settings, LineChart } from 'lucide-react';
+import { ArrowRight, BrainCircuit, Database, Server, Globe, CheckCircle, Shield, Terminal, Settings, } from 'lucide-react';
 
 export const metadata = {
   title: 'Nos Services | IAcodify',
@@ -10,17 +10,31 @@ export const metadata = {
 // Données des services
 const services = [
   {
-    id: 'sites-web',
-    title: 'Sites Web',
+    id: 'vitrine-bolt',
+    title: 'Vitrine (Bolt)',
     icon: <Globe className="w-12 h-12 text-[#00E8FF]" />,
-    description: 'Développement de sites web rapides, modernes et optimisés',
-    details: 'Notre approche combine l\'intelligence artificielle et l\'expertise technique pour créer des sites web performants, SEO-friendly et parfaitement adaptés aux besoins de votre entreprise.',
+    description: 'Une page pour vous présenter, sans boutique ni application',
+    details: 'Ce n\'est pas IAcodify. Pour une vitrine simple, on vous oriente vers Bolt.',
     features: [
-      'Sites vitrine et corporate',
-      'Plateformes e-commerce',
-      'Landing pages conversion-ready',
-      'Intégration CMS (WordPress, etc.)',
-      'Optimisation SEO et performance'
+      'Site vitrine simple',
+      'Sans boutique ni application',
+      'Mise en ligne rapide',
+      'Idéal pour se présenter'
+    ],
+    ctaUrl: 'https://bolt.steropes.fr',
+    cta: 'Créer une vitrine (Bolt)'
+  },
+  {
+    id: 'sites-web',
+    title: 'Sites Web (IAcodify)',
+    icon: <Globe className="w-12 h-12 text-[#00E8FF]" />,
+    description: 'Sites Next.js, React, TypeScript et Tailwind',
+    details: 'IAcodify livre les sites sur son stack : Next.js, React, TypeScript, Tailwind, Python et API. Hors de ce périmètre, c\'est sur devis.',
+    features: [
+      'Stack Next.js / React / TypeScript / Tailwind',
+      'Python et API si besoin',
+      'SEO et performance',
+      'Livraison 72h sur le périmètre IAcodify'
     ],
     cta: 'Créer votre site'
   },
@@ -39,37 +53,7 @@ const services = [
     ],
     cta: 'Développer votre application'
   },
-  {
-    id: 'applications-mobiles',
-    title: 'Applications Mobiles',
-    icon: <Smartphone className="w-12 h-12 text-[#00E8FF]" />,
-    description: 'Création d\'applications mobiles natives et hybrides',
-    details: 'Nous concevons des applications mobiles performantes qui offrent une expérience utilisateur exceptionnelle tout en atteignant vos objectifs business.',
-    features: [
-      'Applications iOS et Android',
-      'Apps hybrides multi-plateformes',
-      'UX/UI mobile optimisée',
-      'Fonctionnalités offline',
-      'Intégration de services cloud'
-    ],
-    cta: 'Créer votre app mobile'
-  },
-  {
-    id: 'ecommerce',
-    title: 'Solutions E-commerce',
-    icon: <LineChart className="w-12 h-12 text-[#00E8FF]" />,
-    description: 'Boutiques en ligne performantes et optimisées pour la conversion',
-    details: 'Notre équipe développe des plateformes e-commerce complètes intégrant les meilleures pratiques en matière d\'expérience utilisateur et d\'optimisation des conversions.',
-    features: [
-      'Boutiques en ligne sur mesure',
-      'Intégration des passerelles de paiement',
-      'Gestion d\'inventaire automatisée',
-      'Optimisation du tunnel d\'achat',
-      'Analyses des ventes et recommandations'
-    ],
-    cta: 'Lancer votre e-commerce'
-  },
-  {
+      {
     id: 'api-integration',
     title: 'API & Intégration',
     icon: <Server className="w-12 h-12 text-[#00E8FF]" />,
@@ -282,6 +266,17 @@ export default function ServicesPage() {
                     ))}
                   </ul>
                   
+                  {'ctaUrl' in service && service.ctaUrl ? (
+                  <a
+                    href={service.ctaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-[#00E8FF] hover:text-[#FFD700] transition-colors font-medium"
+                  >
+                    {service.cta}
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </a>
+                  ) : (
                   <Link 
                     href={`/contact?service=${service.id}`}
                     className="inline-flex items-center text-[#00E8FF] hover:text-[#FFD700] transition-colors font-medium"
@@ -289,6 +284,7 @@ export default function ServicesPage() {
                     {service.cta}
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
+                  )}
                 </div>
               ))}
             </div>

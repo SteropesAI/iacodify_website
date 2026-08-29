@@ -3,6 +3,11 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle } from 'lucide-react';
 
+const TECH_OURS = 'Nos technologies (Next.js, React, TypeScript, Tailwind, Python)';
+const TECH_OTHER = 'Autre technologie';
+const PROJECT_NEW = 'Nouvelle application';
+const PROJECT_REPRISE = 'Récupérer une application existante';
+
 export default function ContactForm() {
   type FormData = {
     name: string;
@@ -11,18 +16,32 @@ export default function ContactForm() {
     company: string;
     subject: string;
     message: string;
-    services: string[]; // Ceci indique que services est un tableau de chaînes
+    services: string[];
+    technology: string;
+    technologyOther: string;
+    projectType: string;
+    repriseWhy: string;
+    repriseProd: string;
+    repriseBugs: string;
   };
-  
-  const [formData, setFormData] = useState<FormData>({
+
+  const emptyForm: FormData = {
     name: '',
     email: '',
     phone: '',
     company: '',
     subject: '',
     message: '',
-    services: []
-  });
+    services: [],
+    technology: '',
+    technologyOther: '',
+    projectType: '',
+    repriseWhy: '',
+    repriseProd: '',
+    repriseBugs: ''
+  };
+  
+  const [formData, setFormData] = useState<FormData>(emptyForm);
   
   const [status, setStatus] = useState<{
     submitted: boolean;
@@ -39,8 +58,7 @@ export default function ContactForm() {
   const services = [
     "Site web",
     "Application web",
-    "Application mobile",
-    "E-commerce",
+    "Vitrine (Bolt)",
     "API & Intégration",
     "Base de données",
     "Automatisation",
@@ -69,39 +87,64 @@ export default function ContactForm() {
     });
   };
 
+  const qualifError = (): string | null => {
+    if (!formData.technology) {
+      return 'Choisissez une technologie.';
+    }
+    if (formData.technology === TECH_OTHER && !formData.technologyOther.trim()) {
+      return 'Précisez la technologie.';
+    }
+    if (!formData.projectType) {
+      return 'Choisissez le type de projet.';
+    }
+    if (formData.projectType === PROJECT_REPRISE) {
+      if (!formData.repriseWhy.trim() || !formData.repriseProd || !formData.repriseBugs) {
+        return 'Complétez les champs de reprise.';
+      }
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setStatus({ ...status, submitting: true });
-    
+    const missing = qualifError();
+    if (missing) {
+      setStatus({ submitted: false, submitting: false, success: false, error: missing });
+      return;
+    }
+
+    setStatus({ submitted: false, submitting: true, success: false, error: null });
+
     try {
-      // Simulation d'envoi (à remplacer par un appel API réel)
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Success
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const payload = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        throw new Error((payload.error || "Erreur serveur") + " (" + res.status + ")");
+      }
+
       setStatus({
         submitted: true,
         submitting: false,
         success: true,
         error: null
       });
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        subject: '',
-        message: '',
-        services: []
-      });
+
+      setFormData(emptyForm);
     } catch (error) {
+      const raw = error instanceof Error ? error.message : "";
+      const network = !raw || raw === "Failed to fetch" || raw.toLowerCase().includes("network");
       setStatus({
-        ...status,
+        submitted: false,
         submitting: false,
-        error: "Une erreur s'est produite. Veuillez réessayer."
+        success: false,
+        error: network
+          ? "Erreur réseau. Vérifiez votre connexion et réessayez."
+          : raw
       });
-      console.error("Une erreur est survenue:", error);
     }
   };
 
@@ -212,6 +255,166 @@ export default function ContactForm() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-300 mb-2">Technologies *</label>
+            <div className="grid grid-cols-1 gap-2">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="tech-ours"
+                  name="technology"
+                  value={TECH_OURS}
+                  checked={formData.technology === TECH_OURS}
+                  onChange={handleChange}
+                  required
+                  className="w-4 h-4 bg-gray-900 border-gray-700 focus:ring-blue-500"
+                />
+                <label htmlFor="tech-ours" className="ml-2 text-gray-300">
+                  {TECH_OURS}
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="tech-other"
+                  name="technology"
+                  value={TECH_OTHER}
+                  checked={formData.technology === TECH_OTHER}
+                  onChange={handleChange}
+                  className="w-4 h-4 bg-gray-900 border-gray-700 focus:ring-blue-500"
+                />
+                <label htmlFor="tech-other" className="ml-2 text-gray-300">
+                  {TECH_OTHER}
+                </label>
+              </div>
+            </div>
+            {formData.technology === TECH_OTHER && (
+              <div className="mt-3">
+                <label htmlFor="technologyOther" className="block text-gray-300 mb-2">Laquelle ? *</label>
+                <input
+                  type="text"
+                  id="technologyOther"
+                  name="technologyOther"
+                  value={formData.technologyOther}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-300 mb-2">Le projet *</label>
+            <div className="grid grid-cols-1 gap-2">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="project-new"
+                  name="projectType"
+                  value={PROJECT_NEW}
+                  checked={formData.projectType === PROJECT_NEW}
+                  onChange={handleChange}
+                  required
+                  className="w-4 h-4 bg-gray-900 border-gray-700 focus:ring-blue-500"
+                />
+                <label htmlFor="project-new" className="ml-2 text-gray-300">
+                  {PROJECT_NEW}
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="project-reprise"
+                  name="projectType"
+                  value={PROJECT_REPRISE}
+                  checked={formData.projectType === PROJECT_REPRISE}
+                  onChange={handleChange}
+                  className="w-4 h-4 bg-gray-900 border-gray-700 focus:ring-blue-500"
+                />
+                <label htmlFor="project-reprise" className="ml-2 text-gray-300">
+                  {PROJECT_REPRISE}
+                </label>
+              </div>
+            </div>
+            {formData.projectType === PROJECT_REPRISE && (
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label htmlFor="repriseWhy" className="block text-gray-300 mb-2">Pourquoi reprendre cette app ? *</label>
+                  <textarea
+                    id="repriseWhy"
+                    name="repriseWhy"
+                    value={formData.repriseWhy}
+                    onChange={handleChange}
+                    required
+                    rows={3}
+                    className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  ></textarea>
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Elle est en production ? *</label>
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="reprise-prod-oui"
+                        name="repriseProd"
+                        value="Oui"
+                        checked={formData.repriseProd === 'Oui'}
+                        onChange={handleChange}
+                        required
+                        className="w-4 h-4 bg-gray-900 border-gray-700 focus:ring-blue-500"
+                      />
+                      <label htmlFor="reprise-prod-oui" className="ml-2 text-gray-300">Oui</label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="reprise-prod-non"
+                        name="repriseProd"
+                        value="Non"
+                        checked={formData.repriseProd === 'Non'}
+                        onChange={handleChange}
+                        className="w-4 h-4 bg-gray-900 border-gray-700 focus:ring-blue-500"
+                      />
+                      <label htmlFor="reprise-prod-non" className="ml-2 text-gray-300">Non</label>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Elle a des bugs ? *</label>
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="reprise-bugs-oui"
+                        name="repriseBugs"
+                        value="Oui"
+                        checked={formData.repriseBugs === 'Oui'}
+                        onChange={handleChange}
+                        required
+                        className="w-4 h-4 bg-gray-900 border-gray-700 focus:ring-blue-500"
+                      />
+                      <label htmlFor="reprise-bugs-oui" className="ml-2 text-gray-300">Oui</label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="reprise-bugs-non"
+                        name="repriseBugs"
+                        value="Non"
+                        checked={formData.repriseBugs === 'Non'}
+                        onChange={handleChange}
+                        className="w-4 h-4 bg-gray-900 border-gray-700 focus:ring-blue-500"
+                      />
+                      <label htmlFor="reprise-bugs-non" className="ml-2 text-gray-300">Non</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="mb-6">

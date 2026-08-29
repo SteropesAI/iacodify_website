@@ -102,7 +102,7 @@ export default function ContactPage() {
             
             <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
               <h3 className="text-xl font-medium text-white mb-2">Quelles technologies et langages de programmation utilisez-vous ?</h3>
-              <p className="text-gray-300">Notre IA est formée sur tous les principaux langages et frameworks (JavaScript, Python, React, Node.js, etc.). Nous nous adaptons à vos besoins technologiques ou vous recommandons les meilleures solutions pour votre projet.</p>
+              <p className="text-gray-300">Stack IAcodify : Next.js, React, TypeScript, Tailwind et Python, plus SQL / Postgres et les APIs. Une vitrine simple, c&apos;est Bolt. Hors de ce stack, c&apos;est sur devis.</p>
             </div>
             
             <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">

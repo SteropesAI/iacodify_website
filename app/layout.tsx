@@ -1,5 +1,6 @@
 import "./globals.css";
 import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 export const metadata = {
   title: 'IAcodify - Codez Demain',
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body>
         <Navigation />
         {children}
+        <Footer />
       </body>
     </html>
   );

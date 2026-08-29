@@ -1,12 +1,12 @@
 import Image from 'next/image'
-import { Brain, Clock, Target, Rocket, ChartBar, Coins, X, Store, Briefcase, ShoppingCart, Check, User, TrendingUp, Sparkles, Code, Database, Wrench } from "lucide-react";
+import { Brain, Clock, Target, Rocket, ChartBar, Coins, X, Store, Briefcase, Check, User, TrendingUp, Sparkles, Code, Database, Wrench } from "lucide-react";
 
 export default function Home() {
   const avantages = [
     {
       icon: <Clock className="w-8 h-8" />,
       title: "Création rapide & efficace",
-      description: "Sites web, e-commerce, applications, ERP, automatisations en un temps record."
+      description: "Sites web, applications, automatisations en un temps record."
     },
     {
       icon: <Target className="w-8 h-8" />,
@@ -44,7 +44,7 @@ export default function Home() {
     {
       titre: "Commerçants & artisans",
       icon: <Store className="w-6 h-6" />,
-      description: "Création de sites e-commerce et outils de gestion."
+      description: "Création de sites et outils de gestion."
     },
     {
       titre: "Startups & entreprises en croissance",
@@ -61,11 +61,7 @@ export default function Home() {
       icon: <TrendingUp className="w-6 h-6" />,
       description: "Solutions pour accompagner votre transition numérique."
     },
-    {
-      titre: "E-commerce",
-      icon: <ShoppingCart className="w-6 h-6" />,
-      description: "Développement de plateformes de vente en ligne optimisées et évolutives."
-    },
+    
     {
       titre: "Services financiers",
       icon: <Database className="w-6 h-6" />,
@@ -167,6 +163,19 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Vitrine simple = Bolt, pas IAcodify */}
+      <section className="relative py-8 bg-[#0A0A0F]">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-8 border border-[#FFD700]/30 text-center">
+            <h2 className="text-2xl font-bold mb-3 text-[#FFD700]">Besoin d&apos;une vitrine simple ?</h2>
+            <p className="text-gray-300 mb-6">Une page pour vous présenter, sans boutique ni application. Ce n&apos;est pas IAcodify : on vous oriente vers Bolt.</p>
+            <a href="https://bolt.steropes.fr" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-gradient-to-r from-[#008b9e] to-[#00E8FF] hover:opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-all">
+              Créer une vitrine (Bolt)
+            </a>
           </div>
         </div>
       </section>
@@ -279,7 +288,7 @@ export default function Home() {
                 
                 <div className="mb-8">
                   <div className="text-3xl font-bold text-white">
-                    4 000 à 8 000€ / mois
+                    Salaire développeur + charges
                   </div>
                   <p className="text-sm text-gray-500">(salaire développeur + charges)</p>
                 </div>
@@ -339,10 +348,6 @@ export default function Home() {
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-[#00E8FF] mt-1" />
                     <span className="text-gray-300">Développement accéléré par l&apos;IA 24/7</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-[#00E8FF] mt-1" />
-                    <span className="text-gray-300">Accès à une multitude de technologies et frameworks</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-[#00E8FF] mt-1" />

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Sparkles, Database, Globe, Server, ShoppingCart, Smartphone, CheckCircle, Zap, Settings, Laptop, Bot } from 'lucide-react';
+import { ArrowRight, Sparkles, Database, Globe, Server, CheckCircle, Zap, Laptop } from 'lucide-react';
 
 export const metadata = {
   title: 'Nos Produits | IAcodify',
@@ -10,54 +10,38 @@ export const metadata = {
 // Données des produits (à remplacer par des données dynamiques)
 const products = [
   {
-    id: 'site-web',
-    title: 'Site Web Professionnel',
+    id: 'vitrine',
+    title: 'Vitrine (Bolt)',
     icon: <Globe className="w-10 h-10 text-[#00E8FF]" />,
-    description: 'Des sites web rapides, modernes et optimisés pour la conversion',
+    description: 'Une page pour vous présenter, sans boutique ni application. Pas IAcodify : on vous oriente vers Bolt.',
     features: [
-      'Design responsive personnalisé',
-      'Optimisation SEO intégrée',
-      'Interface utilisateur intuitive',
-      'Temps de chargement optimisé',
-      'Intégration CMS facile à gérer'
+      'Site vitrine simple',
+      'Sans boutique ni application',
+      'Mise en ligne rapide',
+      'Idéal pour se présenter',
+      'Réalisé avec Bolt'
     ],
-    price: 'À partir de 999€',
-    deliveryTime: '72 heures',
-    popular: true
-  },  
-  {
-    id: 'e-commerce',
-    title: 'Boutique E-commerce',
-    icon: <ShoppingCart className="w-10 h-10 text-[#00E8FF]" />,
-    description: 'Plateforme de vente en ligne complète avec gestion des produits et paiements',
-    features: [
-      'Intégration des passerelles de paiement',
-      'Gestion d\'inventaire automatisée',
-      'Expérience d\'achat optimisée',
-      'Tableau de bord administrateur',
-      'Analyses des ventes en temps réel'
-    ],
-    price: 'À partir de 1499€',
-    deliveryTime: '7 jours',
-    popular: true
-  },
-  {
-    id: 'application-mobile',
-    title: 'Application Mobile',
-    icon: <Smartphone className="w-10 h-10 text-[#00E8FF]" />,
-    description: 'Applications natives et hybrides pour iOS et Android',
-    features: [
-      'Interfaces intuitives et fluides',
-      'Compatibilité multi-plateformes',
-      'Optimisation des performances',
-      'Intégration API sécurisée',
-      'Publication sur les stores'
-    ],
-    price: 'À partir de 2499€',
-    deliveryTime: '10 jours',
+    ctaUrl: 'https://bolt.steropes.fr',
+    ctaLabel: 'Créer une vitrine (Bolt)',
+    deliveryTime: 'Rapide',
     popular: false
   },
   {
+    id: 'site-web',
+    title: 'Site Web (IAcodify)',
+    icon: <Globe className="w-10 h-10 text-[#00E8FF]" />,
+    description: 'Sites Next.js, React, TypeScript et Tailwind, livrés par IAcodify.',
+    features: [
+      'Stack Next.js, React, TypeScript, Tailwind',
+      'Python et API si le projet le demande',
+      'Design responsive',
+      'SEO et performance',
+      'Livraison 72h sur le périmètre IAcodify'
+    ],
+    deliveryTime: '72 heures',
+    popular: true
+  },  
+      {
     id: 'webapp',
     title: 'Application Web',
     icon: <Laptop className="w-10 h-10 text-[#00E8FF]" />,
@@ -69,7 +53,6 @@ const products = [
       'Intégration avec vos systèmes existants',
       'Sécurité des données renforcée'
     ],
-    price: 'À partir de 1999€',
     deliveryTime: '7 jours',
     popular: true
   },
@@ -85,7 +68,6 @@ const products = [
       'Sécurité renforcée',
       'Compatibilité multi-plateformes'
     ],
-    price: 'À partir de 1299€',
     deliveryTime: '5 jours',
     popular: false
   },
@@ -101,43 +83,10 @@ const products = [
       'Sécurisation des accès',
       'Scaling pour hautes performances'
     ],
-    price: 'À partir de 999€',
     deliveryTime: '5 jours',
     popular: false
   },
-  {
-    id: 'chatbot',
-    title: 'Chatbot Intelligent',
-    icon: <Bot className="w-10 h-10 text-[#00E8FF]" />,
-    description: 'Assistants virtuels IA pour automatiser le service client',
-    features: [
-      'IA conversationnelle avancée',
-      'Intégration à votre site web',
-      'Apprentissage continu',
-      'Support client 24/7',
-      'Rapports d\'interactions détaillés'
-    ],
-    price: 'À partir de 899€ + 29€/mois',
-    deliveryTime: '72 heures',
-    popular: true
-  },
-  {
-    id: 'erp',
-    title: 'ERP & CRM Personnalisés',
-    icon: <Settings className="w-10 h-10 text-[#00E8FF]" />,
-    description: 'Solutions de gestion d\'entreprise adaptées à vos processus',
-    features: [
-      'Modules personnalisés selon vos besoins',
-      'Automatisation des flux de travail',
-      'Tableau de bord analytique',
-      'Gestion des relations clients',
-      'Intégration avec vos outils existants'
-    ],
-    price: 'À partir de 2999€',
-    deliveryTime: '10 jours',
-    popular: false
-  },
-  {
+      {
     id: 'express',
     title: 'Services Express',
     icon: <Zap className="w-10 h-10 text-[#00E8FF]" />,
@@ -243,14 +192,18 @@ export default function ProductsPage() {
                   <p className="text-gray-400 mb-4">{product.description}</p>
                   
                   <div className="mb-6">
+                    {product.price && (
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-gray-300 font-medium">Prix:</span>
                       <span className="text-white">{product.price}</span>
                     </div>
+                    )}
+                    {!('ctaUrl' in product && product.ctaUrl) && (
                     <div className="flex items-center gap-2">
                       <span className="text-gray-300 font-medium">Délai:</span>
                       <span className="text-white">{product.deliveryTime}</span>
                     </div>
+                    )}
                   </div>
                   
                   <ul className="space-y-2 mb-6">
@@ -261,6 +214,17 @@ export default function ProductsPage() {
                       </li>
                     ))}
                   </ul>
+                  {'ctaUrl' in product && product.ctaUrl ? (
+                  <a
+                    href={product.ctaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-[#00E8FF] hover:text-[#FFD700] transition-colors font-medium mt-auto"
+                  >
+                    {product.ctaLabel || 'Créer une vitrine (Bolt)'}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </a>
+                  ) : (
                   <Link 
                     href={`/contact?service=${product.id}`}
                     className="inline-flex items-center text-[#00E8FF] hover:text-[#FFD700] transition-colors font-medium mt-auto"
@@ -268,6 +232,7 @@ export default function ProductsPage() {
                     Demander un devis
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
+                  )}
                 </div>
               </div>
             ))}
@@ -355,6 +320,11 @@ export default function ProductsPage() {
               <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
                 <h3 className="text-xl font-medium text-white mb-2">Comment assurez-vous la qualité du code ?</h3>
                 <p className="text-gray-300">Notre processus combine l&apos;IA pour la génération rapide et l&apos;expertise humaine pour la validation. Chaque solution passe par des tests rigoureux de qualité, de performance et de sécurité avant d&apos;être livrée.</p>
+              </div>
+              
+              <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
+                <h3 className="text-xl font-medium text-white mb-2">Vous travaillez avec toutes les technologies ?</h3>
+                <p className="text-gray-300">Le quotidien, c est Next.js, React, TypeScript, Tailwind et Python. SQL, Postgres et les APIs Node vont avec. PHP, mobile natif, Java, .NET, Rust, C, un ERP from scratch : sur devis.</p>
               </div>
             </div>
           </div>
