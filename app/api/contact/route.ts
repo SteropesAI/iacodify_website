@@ -12,6 +12,36 @@ const TECH_OTHER = "Autre technologie";
 const PROJECT_NEW = "Nouvelle application";
 const PROJECT_REPRISE = "Récupérer une application existante";
 
+const MIN_SUBMIT_MS = 3000;
+const QUOTA_MAX = 5;
+const QUOTA_WINDOW_MS = 60 * 60 * 1000;
+const quotaHits = new Map<string, number[]>();
+
+function clientIp(req: NextRequest): string {
+  const xff = req.headers.get("x-forwarded-for");
+  if (xff) {
+    const first = xff.split(",")[0]?.trim();
+    if (first) return first;
+  }
+  const real = req.headers.get("x-real-ip")?.trim();
+  if (real) return real;
+  const socketIp = (req as NextRequest & { ip?: string }).ip?.trim();
+  if (socketIp) return socketIp;
+  return "unknown";
+}
+
+function allowQuota(ip: string): boolean {
+  const now = Date.now();
+  const times = (quotaHits.get(ip) ?? []).filter((t) => now - t < QUOTA_WINDOW_MS);
+  if (times.length >= QUOTA_MAX) {
+    quotaHits.set(ip, times);
+    return false;
+  }
+  times.push(now);
+  quotaHits.set(ip, times);
+  return true;
+}
+
 function isSimpleEmail(value: string): boolean {
   return SIMPLE_EMAIL.test(value);
 }
@@ -132,14 +162,34 @@ function validateQualif(data: Record<string, unknown>): string | null {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = clientIp(req);
+    if (!allowQuota(ip)) {
+      return NextResponse.json(
+        { error: "Trop de messages. Réessayez dans une heure." },
+        { status: 429 }
+      );
+    }
+
+    const data = await req.json() as Record<string, unknown>;
+
+    // Recette: hp_field + legacy website, then hp_field only.
+    if (asStr(data.hp_field) || asStr(data.website)) {
+      console.info('[contact] skip honeypot');
+      return NextResponse.json({ ok: true });
+    }
+
+    const startedAt = Number(data.startedAt);
+    if (!Number.isFinite(startedAt) || Date.now() - startedAt < MIN_SUBMIT_MS) {
+      console.info('[contact] skip delay');
+      return NextResponse.json({ ok: true });
+    }
+
     if (!process.env.RESEND_API_KEY) {
       console.error("[contact] cle Resend manquante dans .env.local");
       return NextResponse.json({ error: "Config manquante" }, { status: 500 });
     }
 
     const resend = new Resend(process.env.RESEND_API_KEY);
-
-    const data = await req.json() as Record<string, unknown>;
 
     if (!data.email || !data.name) {
       return NextResponse.json({ error: "Champs manquants" }, { status: 400 });
@@ -186,6 +236,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: message }, { status });
     }
 
+    console.info('[contact] sent');
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[contact] ERREUR :", err);

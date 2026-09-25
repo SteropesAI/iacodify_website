@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Send, CheckCircle } from 'lucide-react';
 
 const TECH_OURS = 'Nos technologies (Next.js, React, TypeScript, Tailwind, Python)';
@@ -42,6 +42,9 @@ export default function ContactForm() {
   };
   
   const [formData, setFormData] = useState<FormData>(emptyForm);
+
+  const startedAtRef = useRef<number>(Date.now());
+  const hpFieldRef = useRef<HTMLInputElement>(null);
   
   const [status, setStatus] = useState<{
     submitted: boolean;
@@ -116,11 +119,26 @@ export default function ContactForm() {
     setStatus({ submitted: false, submitting: true, success: false, error: null });
 
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const body = JSON.stringify({
+        ...formData,
+        hp_field: hpFieldRef.current?.value ?? "",
+        startedAt: startedAtRef.current,
       });
+      const postOnce = () =>
+        fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+        });
+
+      let res = await postOnce();
+      if (res.status === 404) {
+        await new Promise((r) => setTimeout(r, 300));
+        res = await postOnce();
+      }
+      if (res.status === 404) {
+        throw new Error("Service indisponible (404)");
+      }
       const payload = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
         throw new Error((payload.error || "Erreur serveur") + " (" + res.status + ")");
@@ -163,8 +181,32 @@ export default function ContactForm() {
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="relative overflow-hidden">
           <h2 className="text-2xl font-bold text-white mb-6">Contactez-nous</h2>
+
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              left: "-10000px",
+              top: "auto",
+              width: "1px",
+              height: "1px",
+              overflow: "hidden"
+            }}
+          >
+            <label htmlFor="hp_field">hp_field</label>
+            <input
+              ref={hpFieldRef}
+              type="text"
+              id="hp_field"
+              name="hp_field"
+              autoComplete="off"
+              tabIndex={-1}
+              defaultValue=""
+            />
+          </div>
+
           
           {status.error && (
             <div className="mb-6 p-4 bg-red-900/30 border border-red-700 text-red-200 rounded-lg">
